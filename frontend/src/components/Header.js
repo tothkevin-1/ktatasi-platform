@@ -49,7 +49,7 @@ const Header = () => {
                 </Link>
                 {user.role === 'diak' && (
                   <Link component={RouterLink} to="/jegyek" color="inherit" sx={{ display: { xs: 'none', sm: 'block' }, mr: 2, textDecoration: 'none', '&:hover': {textDecoration: 'underline'} }}>
-                    {t('jegyek')}
+                    Napló
                   </Link>
                 )}
                 <Link component={RouterLink} to="/kurzusaim" color="inherit" sx={{ display: { xs: 'none', sm: 'block' }, mr: 2, textDecoration: 'none', '&:hover': {textDecoration: 'underline'} }}>
@@ -64,6 +64,11 @@ const Header = () => {
                 <Link component={RouterLink} to="/chat" color="inherit" sx={{ display: { xs: 'none', sm: 'block' }, mr: 2, textDecoration: 'none', '&:hover': {textDecoration: 'underline'}}}>
                   Chat
                 </Link>
+                {user.role !== 'diak' && (
+                  <Link component={RouterLink} to="/tanar-naplo" color="inherit" sx={{ display: { xs: 'none', sm: 'block' }, mr: 2, textDecoration: 'none', '&:hover': {textDecoration: 'underline'}}}>
+                    Napló
+                  </Link>
+                )}
                 {user.role !== 'diak' && (
                   <Link component={RouterLink} to="/dolgozat" color="inherit" sx={{ display: { xs: 'none', sm: 'block' }, mr: 2, textDecoration: 'none', '&:hover': {textDecoration: 'underline'}}}>
                     Dolgozat

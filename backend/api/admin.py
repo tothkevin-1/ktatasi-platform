@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 # 1. Importáld be az új modelleket is
-from .models import CustomUser, Tantargy, Kurzus, Feladat, Beadas
+from .models import CustomUser, Tantargy, Kurzus, Feladat, Beadas, Hianyzas
 
 # Ez a rész már megvolt a CustomUser-höz
 class CustomUserAdmin(UserAdmin):
@@ -24,3 +24,4 @@ admin.site.register(Tantargy)
 admin.site.register(Kurzus)
 admin.site.register(Feladat)
 admin.site.register(Beadas)
+admin.site.register(Hianyzas)

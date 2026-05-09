@@ -2,14 +2,14 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useParams, Link as RouterLink } from 'react-router-dom';
 import axiosInstance from '../utils/axiosInstance';
 import AuthContext from '../context/AuthContext';
-import { 
-    Typography, 
-    CircularProgress, 
-    Box, 
-    Paper, 
-    List, 
-    ListItem, 
-    ListItemText, 
+import {
+    Typography,
+    CircularProgress,
+    Box,
+    Paper,
+    List,
+    ListItem,
+    ListItemText,
     Divider,
     ListItemButton,
     Button,
@@ -19,15 +19,25 @@ import {
     Chip,
     Stack,
     Collapse,
-    IconButton
+    IconButton,
+    Select,
+    MenuItem,
+    FormControl,
+    InputLabel,
+    FormControlLabel,
+    Checkbox,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableRow,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import AssessmentIcon from '@mui/icons-material/Assessment';
+import EventBusyIcon from '@mui/icons-material/EventBusy';
 import JegyEloszlasDiagram from '../components/JegyEloszlasDiagram';
-
-// Ikonok a szerkesztéshez és törléshez
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
@@ -55,15 +65,25 @@ function KurzusDetail() {
   const [cim, setCim] = useState('');
   const [leiras, setLeiras] = useState('');
   const [hatarido, setHatarido] = useState('');
-
-  // Új state-ek a szerkesztéshez
-  const [editingFeladatId, setEditingFeladatId] = useState(null); // Annak a feladatnak az ID-ja, amit szerkesztünk
+  const [editingFeladatId, setEditingFeladatId] = useState(null);
   const [statsOpen, setStatsOpen] = useState(false);
+
+  // Hiányzás state-ek
+  const [hianyzasok, setHianyzasok] = useState([]);
+  const [hianyzasModalOpen, setHianyzasModalOpen] = useState(false);
+  const [hDiakId, setHDiakId] = useState('');
+  const [hDatum, setHDatum] = useState(new Date().toISOString().slice(0, 10));
+  const [hIgazolt, setHIgazolt] = useState(false);
+  const [hMegjegyzes, setHMegjegyzes] = useState('');
+  const [hianyzasokOpen, setHianyzasokOpen] = useState(false);
 
   useEffect(() => {
     axiosInstance.get(`/kurzusok/${id}/`)
       .then(response => { setKurzus(response.data); setLoading(false); })
       .catch(error => { console.error("Hiba!", error); setLoading(false); });
+    axiosInstance.get(`/hianyzasok/?kurzus=${id}`)
+      .then(r => setHianyzasok(r.data))
+      .catch(() => {});
   }, [id]);
 
   const handleOpenModal = () => {
@@ -149,6 +169,36 @@ function KurzusDetail() {
   };
 
 
+  const handleHianyzasRogzit = async (e) => {
+    e.preventDefault();
+    try {
+      const resp = await axiosInstance.post('/hianyzasok/', {
+        diak_id: hDiakId,
+        kurzus: id,
+        datum: hDatum,
+        igazolt: hIgazolt,
+        megjegyzes: hMegjegyzes,
+      });
+      setHianyzasok(prev => [resp.data, ...prev]);
+      setHianyzasModalOpen(false);
+      setHDiakId(''); setHDatum(new Date().toISOString().slice(0, 10));
+      setHIgazolt(false); setHMegjegyzes('');
+    } catch (err) {
+      alert(err.response?.data?.non_field_errors?.[0] || 'Hiba a rögzítéskor.');
+    }
+  };
+
+  const handleHianyzasTorles = async (hId) => {
+    if (!window.confirm('Törlöd ezt a hiányzást?')) return;
+    await axiosInstance.delete(`/hianyzasok/${hId}/`);
+    setHianyzasok(prev => prev.filter(h => h.id !== hId));
+  };
+
+  const handleIgazolasToggle = async (h) => {
+    const resp = await axiosInstance.patch(`/hianyzasok/${h.id}/`, { igazolt: !h.igazolt });
+    setHianyzasok(prev => prev.map(x => x.id === h.id ? resp.data : x));
+  };
+
   if (loading) { return <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}><CircularProgress /></Box>; }
   if (!kurzus) { return <Typography>A kurzus nem található.</Typography>; }
 
@@ -173,6 +223,66 @@ function KurzusDetail() {
                     </Box>
                 </Collapse>
             </>
+        )}
+
+        {/* HIÁNYZÁSKEZELÉS — csak tanárnak */}
+        {user.role === 'tanar' && (
+          <>
+            <Divider sx={{ my: 2 }} />
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Button
+                variant="outlined"
+                startIcon={<EventBusyIcon />}
+                onClick={() => setHianyzasokOpen(p => !p)}
+              >
+                Hiányzások ({hianyzasok.length}) {hianyzasokOpen ? '▲' : '▼'}
+              </Button>
+              <Button variant="contained" color="warning" startIcon={<AddIcon />}
+                onClick={() => setHianyzasModalOpen(true)}>
+                Hiányzás rögzítése
+              </Button>
+            </Box>
+            <Collapse in={hianyzasokOpen}>
+              {hianyzasok.length === 0 ? (
+                <Typography sx={{ mt: 2 }} color="text.secondary">Nincs rögzített hiányzás.</Typography>
+              ) : (
+                <Table size="small" sx={{ mt: 1 }}>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Diák</TableCell>
+                      <TableCell>Dátum</TableCell>
+                      <TableCell>Igazolt</TableCell>
+                      <TableCell>Megjegyzés</TableCell>
+                      <TableCell></TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {hianyzasok.map(h => (
+                      <TableRow key={h.id}>
+                        <TableCell>{h.diak.first_name} {h.diak.last_name}</TableCell>
+                        <TableCell>{h.datum}</TableCell>
+                        <TableCell>
+                          <Chip
+                            size="small"
+                            label={h.igazolt ? 'Igazolt' : 'Igazolatlan'}
+                            color={h.igazolt ? 'success' : 'error'}
+                            onClick={() => handleIgazolasToggle(h)}
+                            sx={{ cursor: 'pointer' }}
+                          />
+                        </TableCell>
+                        <TableCell>{h.megjegyzes || '—'}</TableCell>
+                        <TableCell>
+                          <IconButton size="small" color="error" onClick={() => handleHianyzasTorles(h.id)}>
+                            <DeleteIcon fontSize="small" />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </Collapse>
+          </>
         )}
 
         <Divider sx={{ my: 2 }} />
@@ -214,6 +324,37 @@ function KurzusDetail() {
           </List>
         ) : ( <Typography sx={{ mt: 2 }}>Ehhez a kurzushoz még nincsenek feladatok.</Typography> )}
       </>
+
+      {/* Hiányzás rögzítő modal */}
+      <Modal open={hianyzasModalOpen} onClose={() => setHianyzasModalOpen(false)}>
+        <Box sx={modalStyle} component="form" onSubmit={handleHianyzasRogzit}>
+          <Typography variant="h6" gutterBottom>Hiányzás rögzítése</Typography>
+          <FormControl fullWidth margin="normal" required>
+            <InputLabel>Diák</InputLabel>
+            <Select value={hDiakId} label="Diák" onChange={e => setHDiakId(e.target.value)}>
+              {(kurzus?.diakok || []).map(d => (
+                <MenuItem key={d.id} value={d.id}>{d.first_name} {d.last_name} ({d.username})</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <TextField
+            margin="normal" required fullWidth type="date" label="Dátum"
+            value={hDatum} onChange={e => setHDatum(e.target.value)}
+            InputLabelProps={{ shrink: true }}
+          />
+          <FormControlLabel
+            control={<Checkbox checked={hIgazolt} onChange={e => setHIgazolt(e.target.checked)} />}
+            label="Igazolt hiányzás"
+          />
+          <TextField
+            margin="normal" fullWidth label="Megjegyzés (opcionális)"
+            value={hMegjegyzes} onChange={e => setHMegjegyzes(e.target.value)}
+          />
+          <Button type="submit" variant="contained" color="warning" sx={{ mt: 2 }}>
+            Rögzítés
+          </Button>
+        </Box>
+      </Modal>
 
       <Modal open={openModal} onClose={handleCloseModal}>
         <Box sx={modalStyle} component="form" onSubmit={handleSubmitFeladat}>

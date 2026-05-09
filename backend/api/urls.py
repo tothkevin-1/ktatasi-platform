@@ -15,6 +15,8 @@ from .views import (
     AIErtekelesView,
     AIChatView,
     AIDolgozatView,
+    HianyzasViewSet,
+    TanariJegyView,
 )
 
 router = DefaultRouter()
@@ -24,6 +26,7 @@ router.register(r'kurzusok', KurzusViewSet, basename='kurzus')
 router.register(r'feladatok', FeladatViewSet, basename='feladat')
 router.register(r'beadasok', BeadasViewSet, basename='beadas')
 router.register(r'hirek', HirViewSet, basename='hir')
+router.register(r'hianyzasok', HianyzasViewSet, basename='hianyzas')
 
 urlpatterns = router.urls
 
@@ -36,4 +39,5 @@ urlpatterns +=[
     path('ai-ertekeles/', AIErtekelesView.as_view(), name='ai-ertekeles'),
     path('ai-chat/', AIChatView.as_view(), name='ai-chat'),
     path('ai-dolgozat/', AIDolgozatView.as_view(), name='ai-dolgozat'),
+    path('tanar-jegy/', TanariJegyView.as_view(), name='tanar-jegy'),
 ]

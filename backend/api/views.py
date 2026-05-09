@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 from django.db.models import Avg, Count
 import requests as http_requests
 
-from .models import CustomUser, Tantargy, Kurzus, Feladat, Beadas, Hir
+from .models import CustomUser, Tantargy, Kurzus, Feladat, Beadas, Hir, Hianyzas
 from .serializers import (
     UserSerializer,
     TantargySerializer,
@@ -16,7 +16,8 @@ from .serializers import (
     BeadasSerializer,
     ErtekelesSerializer,
     ChangePasswordSerializer,
-    HirSerializer
+    HirSerializer,
+    HianyzasSerializer,
 )
 from .permissions import IsCourseTeacher, IsTeacher, IsTeacherOrAdmin
 
@@ -424,3 +425,63 @@ class DashboardView(APIView):
             data['ertekelendo_kurzusok'] = ertekelendo_kurzusok
             
         return Response(data)
+
+
+class TanariJegyView(APIView):
+    permission_classes = [IsTeacher]
+
+    def post(self, request, *args, **kwargs):
+        diak_id = request.data.get('diak_id')
+        feladat_id = request.data.get('feladat_id')
+        erdemjegy = request.data.get('erdemjegy')
+        visszajelzes = request.data.get('visszajelzes', '')
+
+        if not all([diak_id, feladat_id, erdemjegy]):
+            return Response({'error': 'Hiányzó adatok.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            erdemjegy = int(erdemjegy)
+            if not (1 <= erdemjegy <= 5):
+                raise ValueError
+        except (ValueError, TypeError):
+            return Response({'error': 'Az érdemjegy 1 és 5 közé kell essen.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            diak = CustomUser.objects.get(id=diak_id, role='diak')
+            feladat = Feladat.objects.get(id=feladat_id)
+        except (CustomUser.DoesNotExist, Feladat.DoesNotExist):
+            return Response({'error': 'Diák vagy feladat nem található.'}, status=status.HTTP_404_NOT_FOUND)
+
+        beadas, _ = Beadas.objects.get_or_create(
+            diak=diak,
+            feladat=feladat,
+            defaults={'szoveges_valasz': ''}
+        )
+        beadas.erdemjegy = erdemjegy
+        beadas.tanari_visszajelzes = visszajelzes
+        beadas.save()
+
+        return Response(BeadasSerializer(beadas).data)
+
+
+class HianyzasViewSet(viewsets.ModelViewSet):
+    serializer_class = HianyzasSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.role == 'diak':
+            return Hianyzas.objects.filter(diak=user).select_related('kurzus', 'diak')
+        elif user.role == 'tanar':
+            return Hianyzas.objects.filter(kurzus__tanar=user).select_related('kurzus', 'diak')
+        return Hianyzas.objects.all().select_related('kurzus', 'diak')
+
+    def get_permissions(self):
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
+            self.permission_classes = [IsTeacher]
+        else:
+            self.permission_classes = [permissions.IsAuthenticated]
+        return super().get_permissions()
+
+    def perform_create(self, serializer):
+        serializer.save(rogzito=self.request.user)

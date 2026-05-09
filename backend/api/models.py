@@ -60,6 +60,23 @@ class ChatUzenet(models.Model):
     def __str__(self):
         return f"{self.felhasznalo.username}: {self.szoveg[:30]}"
 
+class Hianyzas(models.Model):
+    diak = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='hianyzasok', limit_choices_to={'role': 'diak'})
+    kurzus = models.ForeignKey(Kurzus, on_delete=models.CASCADE, related_name='hianyzasok')
+    datum = models.DateField(verbose_name="Dátum")
+    igazolt = models.BooleanField(default=False, verbose_name="Igazolt")
+    megjegyzes = models.TextField(blank=True, null=True, verbose_name="Megjegyzés")
+    rogzito = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, related_name='rogzitett_hianyzasok')
+    letrehozva = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name_plural = "Hiányzások"
+        unique_together = ('diak', 'kurzus', 'datum')
+        ordering = ['-datum']
+
+    def __str__(self):
+        return f"{self.diak.username} – {self.kurzus.kurzus_neve} – {self.datum}"
+
 class Hir(models.Model):
     cim = models.CharField(max_length=255, verbose_name="Cím")
     tartalom = models.TextField(verbose_name="Tartalom")

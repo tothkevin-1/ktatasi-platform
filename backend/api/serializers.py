@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.db.models import Avg, Count
-from .models import CustomUser, Tantargy, Kurzus, Feladat, Beadas, Hir 
+from .models import CustomUser, Tantargy, Kurzus, Feladat, Beadas, Hir, Hianyzas
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
@@ -76,6 +76,17 @@ class KurzusSerializer(serializers.ModelSerializer):
         model = Kurzus
         fields = ['id', 'kurzus_neve', 'tantargy', 'tantargy_id', 'tanar', 'tanar_id', 'diakok', 'feladatok']
 
+
+class HianyzasSerializer(serializers.ModelSerializer):
+    diak = UserSerializer(read_only=True)
+    diak_id = serializers.PrimaryKeyRelatedField(
+        queryset=CustomUser.objects.filter(role='diak'), source='diak', write_only=True
+    )
+    kurzus_neve = serializers.ReadOnlyField(source='kurzus.kurzus_neve')
+
+    class Meta:
+        model = Hianyzas
+        fields = ['id', 'diak', 'diak_id', 'kurzus', 'kurzus_neve', 'datum', 'igazolt', 'megjegyzes', 'letrehozva']
 
 class HirSerializer(serializers.ModelSerializer):
     # A szerző adatait beágyazzuk, hogy a frontendnek ne kelljen külön lekérdeznie

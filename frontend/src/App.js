@@ -24,6 +24,8 @@ import MiniNaptar from './components/MiniNaptar';
 import ChatPage from './pages/ChatPage';
 import DolgozatPage from './pages/DolgozatPage';
 import NaptarPage from './pages/NaptarPage';
+import HianyzasPage from './pages/HianyzasPage';
+import TanarNaploPage from './pages/TanarNaploPage';
 
 const AppContent = () => {
   const { mode, user } = useContext(AuthContext);
@@ -77,6 +79,8 @@ const AppContent = () => {
                 <Route path="/chat" element={<ChatPage />} />
                 <Route path="/dolgozat" element={<DolgozatPage />} />
                 <Route path="/naptar" element={<NaptarPage />} />
+                <Route path="/hianyzasok" element={<HianyzasPage />} />
+                <Route path="/tanar-naplo" element={<TanarNaploPage />} />
               </Route>
             </Routes>
           </Box>
