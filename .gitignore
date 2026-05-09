@@ -17,6 +17,9 @@ backend/chroma/
 # Media feltöltések
 backend/media/profilkepek/
 
+# Claude Code
+.claude/
+
 # OS
 .DS_Store
 Thumbs.db
