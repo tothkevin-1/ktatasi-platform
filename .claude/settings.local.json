@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(python --version)",
+      "PowerShell(node --version)",
+      "PowerShell(npm --version)",
+      "PowerShell(Get-ChildItem D:\\\\oktatasi-platform\\\\backend\\\\venv\\\\Lib\\\\site-packages | Where-Object { $_.Name -match 'django|rest_framework|corsheaders|simplejwt' } | Select-Object Name)"
+    ]
+  }
+}

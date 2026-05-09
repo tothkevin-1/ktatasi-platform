@@ -1,0 +1,31 @@
+# Az internet története
+
+## Az internet kezdetei – ARPANET
+Az internet elődje az ARPANET (Advanced Research Projects Agency Network) volt, amelyet az amerikai védelmi minisztérium hozott létre 1969-ben. Az első üzenetet 1969. október 29-én küldték el a UCLA és az SRI International számítógépei között. Az üzenet "LOGIN" lett volna, de a rendszer összeomlott az "LO" után. Ez volt az internet első üzenete.
+
+## A TCP/IP protokoll
+1974-ben Vint Cerf és Bob Kahn megalkotta a TCP/IP protokollt, amely ma is az internet alapja. A TCP/IP két részből áll: a TCP (Transmission Control Protocol) az adatok csomagokra bontásáért és összerakásáért felel, az IP (Internet Protocol) pedig a csomagok helyes célba juttatásáért. 1983. január 1-jén az ARPANET teljesen áttért a TCP/IP-re – ezt tartják az internet "születésnapjának".
+
+## A World Wide Web feltalálása
+1989-ben Tim Berners-Lee brit fizikus, aki a CERN-nél dolgozott, javasolta a World Wide Web (WWW) létrehozását. 1991-ben elérhetővé tette az első weboldalt, amely a CERN-ről szólt. A web és az internet nem ugyanaz: az internet a fizikai hálózat, a web pedig egy szolgáltatás, amely az interneten fut.
+
+## Az első böngészők
+1993-ban jelent meg a Mosaic böngésző, amelyet Marc Andreessen fejlesztett az Illinois Egyetemen. Ez volt az első böngésző, amely képeket is meg tudott jeleníteni a szöveg mellett. 1994-ben Andreessen megalapította a Netscape Communications Corporation-t, és kiadta a Netscape Navigator böngészőt.
+
+## A böngészőháborúk
+1995-ben a Microsoft kiadta az Internet Explorer böngészőt, és megkezdődött az úgynevezett "böngészőháború" a Netscape és az IE között. A Microsoft az Internet Explorert ingyen adta Windows-szal, ami miatt a Netscape elveszítette piaci részesedését. 2003-ban a Netscape megszűnt.
+
+## A keresőmotorok fejlődése
+Az első keresőmotorok: Archie (1990), WebCrawler (1994), AltaVista (1995). 1998-ban Larry Page és Sergey Brin megalapította a Google-t a Stanford Egyetemen. A Google PageRank algoritmusa forradalmasította a keresést: a weboldalak fontosságát a rájuk mutató linkek száma alapján mérte.
+
+## A szélessávú internet elterjedése
+Az 1990-es évek végéig az internet főleg betárcsázós (dial-up) kapcsolaton keresztül működött, amelynek sebessége 56 kbps volt. A 2000-es évek elején terjedt el a DSL és a kábeles internet, amelyek lényegesen gyorsabbak. Ma a legtöbb fejlett országban optikai szálak biztosítják a gigabites sebességet.
+
+## A közösségi média kora
+2004-ben indult a Facebook Mark Zuckerberg által a Harvard Egyetemen. 2005-ben indult a YouTube, 2006-ban a Twitter. Ezek a platformok megváltoztatták, ahogyan az emberek kommunikálnak és információt fogyasztanak.
+
+## A mobilinternet forradalma
+2007-ben Steve Jobs bemutatta az első iPhone-t, amely forradalmasította a mobilinternetet. 2008-ban megjelent az Android operációs rendszer. Ma a világ internetforgalmának több mint fele mobileszközökről érkezik.
+
+## Az internet jövője
+Az 5G hálózatok lehetővé teszik a másodpercenkénti gigabites letöltési sebességet. Az IoT (Internet of Things – dolgok internete) révén már nem csak számítógépek és telefonok, hanem háztartási eszközök, járművek és ipari gépek is kapcsolódnak az internethez. 2023-ban becslések szerint 5,4 milliárd ember használja az internetet világszerte.

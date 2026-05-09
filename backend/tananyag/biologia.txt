@@ -1,0 +1,31 @@
+# Biológia tananyag
+
+## A sejt felépítése
+A sejt az élet alapegysége. Kétféle sejttípus létezik: prokarióta (sejtmag nélküli, pl. baktériumok) és eukarióta (sejtmaggal rendelkező, pl. állati és növényi sejtek). Az eukarióta sejt főbb részei: sejtmag (DNS-t tartalmaz), mitokondrium (energiatermelés), riboszóma (fehérjeszintézis), endoplazmatikus retikulum és sejtmembrán.
+
+## A DNS és az öröklődés
+A DNS (dezoxiribonukleinsav) az örökletes információ hordozója. Kettős spirál szerkezetű, amelyet James Watson és Francis Crick fedezett fel 1953-ban. A DNS négy bázisból épül fel: adenin (A), timin (T), citozin (C) és guanin (G). A bázisok mindig párban kapcsolódnak: A-T és C-G. Az emberi szervezet kb. 3 milliárd bázispárt tartalmaz.
+
+## A sejtosztódás
+A sejtek kétféleképpen osztódnak: mitózis és meiózis. A mitózis során a sejt kettéosztódik, és két azonos leánysejt keletkezik – ez a növekedés és szövetek megújulásának alapja. A meiózis az ivarsejtek (petesejt, hímivarsejt) képzésére szolgál, és a kromoszómaszám felére csökken.
+
+## A fotoszintézis
+A fotoszintézis az a folyamat, amelynek során a növények napfény energiájával szén-dioxidból és vízből szerves anyagot (glükózt) és oxigént állítanak elő. Egyenlete: 6CO₂ + 6H₂O + fényenergia → C₆H₁₂O₆ + 6O₂. A fotoszintézis a kloroplasztiszokban zajlik, amelyek a klorofillt tartalmazzák – ez adja a növények zöld színét.
+
+## A légzés és anyagcsere
+A sejtlégzés a fotoszintézis fordítottja: a glükóz oxigén segítségével szén-dioxiddá és vízzé bomlik, és energia szabadul fel. Ez az energia ATP (adenozin-trifoszfát) formájában tárolódik. Az emberi szervezetben naponta kb. 40 kg ATP keletkezik és bomlik le. Az anyagcsere összefoglalja az összes kémiai reakciót, amely a szervezetben zajlik.
+
+## Az emberi keringési rendszer
+A szív egy négyüregű izmos pumpa, amely percenként 60-100-szor ver. Naponta kb. 100 000-szer ver és 7500 liter vért pumpál. A vér kétféle érben kering: az artériák (verőerek) a szívtől távolabb viszik a vért, a vénák (visszaér) visszafelé. A hajszálerek a legvékonyabb erek, ahol a gázcsere zajlik.
+
+## Az immunrendszer
+Az immunrendszer védi a szervezetet a kórokozók ellen. Kétféle immunitás létezik: veleszületett (nem specifikus) és szerzett (specifikus). A fehérvérsejtek (leukociták) az immunrendszer katonái. A B-limfociták antitesteket termelnek, a T-limfociták közvetlenül támadják a kórokozókat. Az oltás mesterségesen váltja ki az immunválaszt, hogy a szervezet emlékezzen a kórokozóra.
+
+## Az idegrendszer
+Az idegrendszer az idegsejtek (neuronok) hálózatából áll. Az emberi agyban kb. 86 milliárd neuron található. Az idegimpulzus elektrokémiai jel, amely másodpercenként 1-120 méteres sebességgel terjed. Az agy három fő részre oszlik: nagyagy (gondolkodás, érzékelés), kisagy (mozgáskoordináció) és agytörzs (alapvető életfunkciók).
+
+## Az evolúció
+Charles Darwin 1859-ben publikálta "A fajok eredete" című művét, amelyben megalkotta a természetes szelekció elméletét. Az evolúció lényege: a véletlenszerű mutációk által keletkező változatok közül azok maradnak fenn, amelyek jobban alkalmazkodnak a környezethez. Az élet a Földön kb. 3,5 milliárd évvel ezelőtt jelent meg egysejtű szervezetek formájában.
+
+## Az ökoszisztéma
+Az ökoszisztéma az élőlények és élettelen környezetük együttese. A táplálékláncban a termelők (növények) szerves anyagot állítanak elő, a fogyasztók (állatok) ezt fogyasztják, a lebontók (gombák, baktériumok) az elhalt szervezeteket bontják le. Az energiapiramis szerint az energia 10%-a kerül át az egyik szintről a következőre.
