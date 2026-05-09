@@ -2,9 +2,9 @@ import React, { useState, useRef, useEffect } from 'react';
 import axiosInstance from '../utils/axiosInstance';
 import {
     Box, Paper, Typography, TextField, Button,
-    CircularProgress, IconButton, Fab, Collapse, Divider, Avatar
+    CircularProgress, Divider, Avatar, IconButton
 } from '@mui/material';
-import { Send as SendIcon, Close as CloseIcon, SmartToy as AiIcon } from '@mui/icons-material';
+import { Send as SendIcon, SmartToy as AiIcon, Close as CloseIcon } from '@mui/icons-material';
 
 function AiChatWidget() {
     const [nyitva, setNyitva] = useState(false);
@@ -39,33 +39,28 @@ function AiChatWidget() {
     };
 
     return (
-        <Box sx={{ position: 'fixed', bottom: 24, right: 24, zIndex: 1300 }}>
-            {/* Chat ablak */}
-            <Collapse in={nyitva} timeout="auto">
+        <Box sx={{ position: 'fixed', bottom: 24, right: 24, zIndex: 1300, display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+
+            {/* Chat ablak — felfele nyílik */}
+            {nyitva && (
                 <Paper
                     elevation={8}
                     sx={{
                         width: 320,
-                        height: 440,
-                        mb: 1,
-                        display: 'flex',
-                        flexDirection: 'column',
                         borderRadius: 3,
                         overflow: 'hidden',
+                        mb: 1,
                     }}
                 >
                     {/* Fejléc */}
                     <Box sx={{
-                        bgcolor: 'primary.main',
-                        color: 'primary.contrastText',
-                        px: 2, py: 1.5,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
+                        bgcolor: 'primary.main', color: 'primary.contrastText',
+                        px: 2, py: 1,
+                        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                     }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <AiIcon />
-                            <Typography variant="subtitle1" fontWeight="bold">AI Asszisztens</Typography>
+                            <AiIcon fontSize="small" />
+                            <Typography variant="subtitle2" fontWeight="bold">AI Asszisztens</Typography>
                         </Box>
                         <IconButton size="small" onClick={() => setNyitva(false)} sx={{ color: 'inherit' }}>
                             <CloseIcon fontSize="small" />
@@ -75,7 +70,7 @@ function AiChatWidget() {
                     <Divider />
 
                     {/* Üzenetek */}
-                    <Box sx={{ flexGrow: 1, overflowY: 'auto', p: 1.5, display: 'flex', flexDirection: 'column', gap: 1 }}>
+                    <Box sx={{ height: 260, overflowY: 'auto', p: 1.5, display: 'flex', flexDirection: 'column', gap: 1 }}>
                         {beszelgetes.map((msg, i) => (
                             <Box key={i} sx={{
                                 display: 'flex',
@@ -84,18 +79,18 @@ function AiChatWidget() {
                                 gap: 0.5,
                             }}>
                                 {msg.szerep === 'ai' && (
-                                    <Avatar sx={{ width: 28, height: 28, bgcolor: 'primary.main', flexShrink: 0 }}>
-                                        <AiIcon sx={{ fontSize: 16 }} />
+                                    <Avatar sx={{ width: 24, height: 24, bgcolor: 'primary.main', flexShrink: 0 }}>
+                                        <AiIcon sx={{ fontSize: 14 }} />
                                     </Avatar>
                                 )}
                                 <Box sx={{
-                                    maxWidth: '80%',
-                                    px: 1.5, py: 1,
-                                    borderRadius: msg.szerep === 'ai' ? '4px 12px 12px 12px' : '12px 4px 12px 12px',
+                                    maxWidth: '85%',
+                                    px: 1.2, py: 0.8,
+                                    borderRadius: msg.szerep === 'ai' ? '4px 10px 10px 10px' : '10px 4px 10px 10px',
                                     bgcolor: msg.szerep === 'ai' ? 'action.hover' : 'primary.main',
                                     color: msg.szerep === 'diak' ? 'primary.contrastText' : 'text.primary',
                                 }}>
-                                    <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+                                    <Typography variant="caption" sx={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', fontSize: '0.72rem' }}>
                                         {msg.szoveg}
                                     </Typography>
                                 </Box>
@@ -103,10 +98,10 @@ function AiChatWidget() {
                         ))}
                         {loading && (
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                <Avatar sx={{ width: 28, height: 28, bgcolor: 'primary.main' }}>
-                                    <AiIcon sx={{ fontSize: 16 }} />
+                                <Avatar sx={{ width: 24, height: 24, bgcolor: 'primary.main' }}>
+                                    <AiIcon sx={{ fontSize: 14 }} />
                                 </Avatar>
-                                <CircularProgress size={16} />
+                                <CircularProgress size={14} />
                             </Box>
                         )}
                         <div ref={vegRef} />
@@ -126,27 +121,40 @@ function AiChatWidget() {
                             disabled={loading}
                             multiline
                             maxRows={2}
+                            sx={{ '& .MuiInputBase-input': { fontSize: '0.8rem' } }}
                         />
                         <Button
                             type="submit"
                             variant="contained"
                             disabled={loading || !uzenet.trim()}
-                            sx={{ minWidth: 40, px: 1.5 }}
+                            sx={{ minWidth: 36, px: 1 }}
                         >
-                            <SendIcon fontSize="small" />
+                            <SendIcon sx={{ fontSize: 16 }} />
                         </Button>
                     </Box>
                 </Paper>
-            </Collapse>
+            )}
 
-            {/* Lebegő gomb */}
-            <Fab
-                color="primary"
+            {/* Kék kerek gomb */}
+            <Box
                 onClick={() => setNyitva(prev => !prev)}
-                sx={{ boxShadow: 6 }}
+                sx={{
+                    width: 52,
+                    height: 52,
+                    borderRadius: '50%',
+                    bgcolor: 'primary.main',
+                    color: 'primary.contrastText',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    boxShadow: 6,
+                    '&:hover': { bgcolor: 'primary.dark' },
+                    transition: 'background 0.2s',
+                }}
             >
                 <AiIcon />
-            </Fab>
+            </Box>
         </Box>
     );
 }

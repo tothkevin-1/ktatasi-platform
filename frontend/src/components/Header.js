@@ -55,15 +55,20 @@ const Header = () => {
                 <Link component={RouterLink} to="/kurzusaim" color="inherit" sx={{ display: { xs: 'none', sm: 'block' }, mr: 2, textDecoration: 'none', '&:hover': {textDecoration: 'underline'} }}>
                   {t('kurzusaim')}
                 </Link>
+                <Link component={RouterLink} to="/naptar" color="inherit" sx={{ display: { xs: 'none', sm: 'block' }, mr: 2, textDecoration: 'none', '&:hover': {textDecoration: 'underline'}}}>
+                  Naptár
+                </Link>
                 <Link component={RouterLink} to="/ranglista" color="inherit" sx={{ display: { xs: 'none', sm: 'block' }, mr: 2, textDecoration: 'none', '&:hover': {textDecoration: 'underline'}}}>
                   {t('ranglista')}
                 </Link>
                 <Link component={RouterLink} to="/chat" color="inherit" sx={{ display: { xs: 'none', sm: 'block' }, mr: 2, textDecoration: 'none', '&:hover': {textDecoration: 'underline'}}}>
                   Chat
                 </Link>
-                <Link component={RouterLink} to="/dolgozat" color="inherit" sx={{ display: { xs: 'none', sm: 'block' }, mr: 2, textDecoration: 'none', '&:hover': {textDecoration: 'underline'}}}>
-                  Dolgozat
-                </Link>
+                {user.role !== 'diak' && (
+                  <Link component={RouterLink} to="/dolgozat" color="inherit" sx={{ display: { xs: 'none', sm: 'block' }, mr: 2, textDecoration: 'none', '&:hover': {textDecoration: 'underline'}}}>
+                    Dolgozat
+                  </Link>
+                )}
               </>
           )}
 
