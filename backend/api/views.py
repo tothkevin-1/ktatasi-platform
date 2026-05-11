@@ -61,10 +61,16 @@ class BeadasViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         import json as json_lib
+        from rest_framework.exceptions import ValidationError
         feladat_id = self.request.data.get('feladat')
         if Beadas.objects.filter(diak=self.request.user, feladat_id=feladat_id).exists():
-            from rest_framework.exceptions import ValidationError
             raise ValidationError('Ezt a feladatot már beadtad.')
+        try:
+            feladat_obj = Feladat.objects.get(id=feladat_id)
+            if feladat_obj.hatarido < datetime.now(timezone.utc):
+                raise ValidationError('A beadási határidő lejárt, a feladat már nem adható be.')
+        except Feladat.DoesNotExist:
+            raise ValidationError('A feladat nem található.')
         beadas = serializer.save(diak=self.request.user)
         # Automatikus kvíz értékelés
         feladat = beadas.feladat
@@ -74,7 +80,7 @@ class BeadasViewSet(viewsets.ModelViewSet):
                 kerdesek = feladat.kviz_kerdesek
                 helyes = sum(1 for i, k in enumerate(kerdesek) if valaszok.get(str(i)) == k['helyes'])
                 szazalek = helyes / len(kerdesek)
-                erdemjegy = max(1, min(5, round(1 + szazalek * 4)))
+                erdemjegy = max(1, min(10, round(1 + szazalek * 9)))
                 beadas.erdemjegy = erdemjegy
                 beadas.tanari_visszajelzes = f"Automatikus értékelés: {helyes}/{len(kerdesek)} helyes válasz ({round(szazalek*100)}%)"
                 beadas.save()
@@ -244,7 +250,7 @@ class AIChatView(APIView):
         try:
             ollama_response = http_requests.post(
                 'http://localhost:11434/api/generate',
-                json={'model': 'llama3.2:3b', 'prompt': prompt, 'stream': False},
+                json={'model': 'llama3.2:3b', 'prompt': prompt, 'stream': False, 'options': {'num_predict': 400, 'temperature': 0.7}},
                 timeout=90
             )
             ollama_response.raise_for_status()
@@ -293,7 +299,7 @@ class AIDolgozatView(APIView):
         try:
             ollama_response = http_requests.post(
                 'http://localhost:11434/api/generate',
-                json={'model': 'llama3.2:3b', 'prompt': prompt, 'stream': False},
+                json={'model': 'llama3.2:3b', 'prompt': prompt, 'stream': False, 'options': {'num_predict': 1200, 'temperature': 0.7}},
                 timeout=120
             )
             ollama_response.raise_for_status()
@@ -367,7 +373,7 @@ class AIErtekelesView(APIView):
                 f"Te egy tapasztalt tanár asszisztens vagy. "
                 f"A feladat leírása: {feladat_leiras}\n"
                 f"A diák válasza: {diak_valasz}\n\n"
-                f"Adj egy rövid, konstruktív értékelési javaslatot magyarul, és javasolj egy 1-5 közötti érdemjegyet. "
+                f"Adj egy rövid, konstruktív értékelési javaslatot magyarul, és javasolj egy 1-10 közötti érdemjegyet. "
                 f"Legyen tömör, max 5 mondat."
             )
         else:
@@ -382,7 +388,7 @@ class AIErtekelesView(APIView):
         try:
             ollama_response = http_requests.post(
                 'http://localhost:11434/api/generate',
-                json={'model': 'llama3.2:3b', 'prompt': prompt, 'stream': False},
+                json={'model': 'llama3.2:3b', 'prompt': prompt, 'stream': False, 'options': {'num_predict': 400, 'temperature': 0.7}},
                 timeout=60
             )
             ollama_response.raise_for_status()
@@ -441,10 +447,10 @@ class TanariJegyView(APIView):
 
         try:
             erdemjegy = int(erdemjegy)
-            if not (1 <= erdemjegy <= 5):
+            if not (1 <= erdemjegy <= 10):
                 raise ValueError
         except (ValueError, TypeError):
-            return Response({'error': 'Az érdemjegy 1 és 5 közé kell essen.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'Az érdemjegy 1 és 10 közé kell essen.'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             diak = CustomUser.objects.get(id=diak_id, role='diak')

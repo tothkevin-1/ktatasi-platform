@@ -298,23 +298,36 @@ function FeladatDetail() {
   if (loading) { return <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}><CircularProgress /></Box>; }
   if (!feladat) { return <Typography>A feladat betöltése nem sikerült vagy nem található.</Typography>; }
 
-  // Megkeressük, hogy a bejelentkezett user adott-e már be munkát
   const sajatBeadas = user ? feladat.beadasok.find(b => b.diak.id === user.user_id) : null;
+  const lejart = new Date(feladat.hatarido) < new Date();
+  const hatarido = new Date(feladat.hatarido);
+  const hatarido_szin = lejart ? 'text.disabled' : 'error.main';
 
   return (
     <Paper sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>{feladat.cim}</Typography>
       <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap', mb: 2 }}>{feladat.leiras}</Typography>
-      <Typography variant="subtitle1" color="error.main" gutterBottom>
-        Határidő: {new Date(feladat.hatarido).toLocaleString('hu-HU')}
-      </Typography>
-      
+
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+        <Typography variant="subtitle1" color={hatarido_szin}>
+          Határidő: {hatarido.toLocaleString('hu-HU')}
+        </Typography>
+        {lejart && (
+          <Chip label="Lejárt" color="default" size="small" />
+        )}
+      </Box>
+
       <Divider sx={{ my: 3 }} />
-      
+
       {user && user.role === 'tanar' ? (
         <TanariBeadasokLista beadasok={feladat.beadasok} setBeadasok={setBeadasok} />
       ) : sajatBeadas ? (
         <DiakBeadasaNezet beadas={sajatBeadas} />
+      ) : lejart ? (
+        <Alert severity="warning">
+          <AlertTitle>A beadási határidő lejárt</AlertTitle>
+          Ez a feladat már nem adható be. A határidő {hatarido.toLocaleString('hu-HU')} volt.
+        </Alert>
       ) : feladat.tipus === 'kviz' ? (
         <KvizUrlap feladat={feladat} handleBeadas={handleBeadas} />
       ) : (

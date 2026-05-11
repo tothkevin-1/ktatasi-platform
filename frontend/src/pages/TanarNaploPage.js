@@ -21,10 +21,10 @@ const modalStyle = {
 };
 
 const getGradeColor = (jegy) => {
-    if (jegy >= 5) return '#4caf50';
-    if (jegy >= 4) return '#2196f3';
-    if (jegy >= 3) return '#ff9800';
-    if (jegy >= 2) return '#ff5722';
+    if (jegy >= 9) return '#4caf50';
+    if (jegy >= 7) return '#2196f3';
+    if (jegy >= 5) return '#ff9800';
+    if (jegy >= 3) return '#ff5722';
     return '#f44336';
 };
 
@@ -352,8 +352,8 @@ function TanarNaploPage() {
                         <b>{jegyDiakNev}</b> — {jegyFeladatCim}
                     </Typography>
                     <TextField
-                        fullWidth label="Érdemjegy (1–5)"
-                        type="number" inputProps={{ min: 1, max: 5 }}
+                        fullWidth label="Érdemjegy (1–10)"
+                        type="number" inputProps={{ min: 1, max: 10 }}
                         value={jegyErtek}
                         onChange={e => setJegyErtek(e.target.value)}
                         sx={{ mb: 2 }}
@@ -368,7 +368,7 @@ function TanarNaploPage() {
                         <Button
                             variant="contained" startIcon={<SaveIcon />}
                             onClick={handleJegyMent}
-                            disabled={!jegyErtek || jegyErtek < 1 || jegyErtek > 5}
+                            disabled={!jegyErtek || jegyErtek < 1 || jegyErtek > 10}
                         >
                             Mentés
                         </Button>

@@ -8,10 +8,10 @@ import MenuBookIcon from '@mui/icons-material/MenuBook';
 import EventBusyIcon from '@mui/icons-material/EventBusy';
 
 const getGradeColor = (jegy) => {
-    if (jegy >= 5) return '#4caf50';
-    if (jegy >= 4) return '#2196f3';
-    if (jegy >= 3) return '#ff9800';
-    if (jegy >= 2) return '#ff5722';
+    if (jegy >= 9) return '#4caf50';
+    if (jegy >= 7) return '#2196f3';
+    if (jegy >= 5) return '#ff9800';
+    if (jegy >= 3) return '#ff5722';
     return '#f44336';
 };
 
