@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axiosInstance from '../utils/axiosInstance';
+import ReactMarkdown from 'react-markdown';
 import {
     Box, Paper, Typography, TextField, Button,
     CircularProgress, Divider, Avatar, IconButton, Chip,
@@ -23,13 +24,13 @@ const GYORS_KERDESEK = [
     'Mi a különbség a két fogalom között?',
 ];
 
+const KEZDO_UZENET = { szerep: 'ai', szoveg: 'Szia! Miben segíthetek? 📚' };
+
 function AiChatWidget() {
     const [nyitva, setNyitva] = useState(false);
     const [uzenet, setUzenet] = useState('');
     const [tantargy, setTantargy] = useState('');
-    const [beszelgetes, setBeszelgetes] = useState([
-        { szerep: 'ai', szoveg: 'Szia! Miben segíthetek? 📚' }
-    ]);
+    const [beszelgetes, setBeszelgetes] = useState([KEZDO_UZENET]);
     const [loading, setLoading] = useState(false);
     const vegRef = useRef(null);
     const inputRef = useRef(null);
@@ -46,10 +47,19 @@ function AiChatWidget() {
         if (!szoveg.trim() || loading) return;
         const diakUzenet = szoveg.trim();
         setUzenet('');
-        setBeszelgetes(prev => [...prev, { szerep: 'diak', szoveg: diakUzenet }]);
+
+        const ujBeszelgetes = [...beszelgetes, { szerep: 'diak', szoveg: diakUzenet }];
+        setBeszelgetes(ujBeszelgetes);
         setLoading(true);
+
         try {
-            const response = await axiosInstance.post('/ai-chat/', { uzenet: diakUzenet });
+            // Előzményeket is elküldjük (az első AI üzenet nélkül)
+            const elozmeny = ujBeszelgetes.slice(1);
+            const response = await axiosInstance.post('/ai-chat/', {
+                uzenet: diakUzenet,
+                elozmeny,
+                tantargy: tantargy || '',
+            });
             setBeszelgetes(prev => [...prev, { szerep: 'ai', szoveg: response.data.valasz }]);
         } catch {
             setBeszelgetes(prev => [...prev, { szerep: 'ai', szoveg: 'Hiba történt. Próbáld újra.' }]);
@@ -59,23 +69,24 @@ function AiChatWidget() {
     };
 
     const handleKuldes = (e) => { e.preventDefault(); kuldes(uzenet); };
+
     const handleGyorsKerdes = (kerdes) => {
         const szoveg = tantargy ? `${tantargy} tantárgy kapcsán: ${kerdes}` : kerdes;
         kuldes(szoveg);
     };
+
     const handleReset = () => {
-        setBeszelgetes([{ szerep: 'ai', szoveg: 'Szia! Miben segíthetek? 📚' }]);
+        setBeszelgetes([KEZDO_UZENET]);
         setTantargy('');
     };
 
-    // Csak az első üzenet van → mutassuk a gyors kérdéseket
-    const mutatGyorsKerdeseket = beszelgetes.length === 1;
+    const mutatGyorsKerdeseket = beszelgetes.length === 1 && !loading;
 
     return (
         <Box sx={{ position: 'fixed', bottom: 24, right: 24, zIndex: 1300, display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
 
             {nyitva && (
-                <Paper elevation={8} sx={{ width: 320, borderRadius: 3, overflow: 'hidden', mb: 1 }}>
+                <Paper elevation={8} sx={{ width: 330, borderRadius: 3, overflow: 'hidden', mb: 1 }}>
 
                     {/* Fejléc */}
                     <Box sx={{
@@ -118,7 +129,7 @@ function AiChatWidget() {
                     <Divider />
 
                     {/* Üzenetek */}
-                    <Box sx={{ height: 260, overflowY: 'auto', p: 1.5, display: 'flex', flexDirection: 'column', gap: 1 }}>
+                    <Box sx={{ height: 280, overflowY: 'auto', p: 1.5, display: 'flex', flexDirection: 'column', gap: 1 }}>
                         {beszelgetes.map((msg, i) => (
                             <Box key={i} sx={{
                                 display: 'flex',
@@ -138,19 +149,34 @@ function AiChatWidget() {
                                     bgcolor: msg.szerep === 'ai' ? 'action.hover' : 'primary.main',
                                     color: msg.szerep === 'diak' ? 'primary.contrastText' : 'text.primary',
                                 }}>
-                                    <Typography variant="caption" sx={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', fontSize: '0.72rem' }}>
-                                        {msg.szoveg}
-                                    </Typography>
+                                    {msg.szerep === 'ai' ? (
+                                        <Box sx={{
+                                            fontSize: '0.72rem',
+                                            lineHeight: 1.5,
+                                            '& p': { margin: '2px 0' },
+                                            '& ul, & ol': { pl: 2, my: 0.5 },
+                                            '& li': { fontSize: '0.72rem' },
+                                            '& strong': { fontWeight: 'bold' },
+                                            '& h1, & h2, & h3': { fontSize: '0.8rem', fontWeight: 'bold', my: 0.5 },
+                                        }}>
+                                            <ReactMarkdown>{msg.szoveg}</ReactMarkdown>
+                                        </Box>
+                                    ) : (
+                                        <Typography variant="caption" sx={{ fontSize: '0.72rem', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+                                            {msg.szoveg}
+                                        </Typography>
+                                    )}
                                 </Box>
                             </Box>
                         ))}
 
+                        {/* Töltési animáció */}
                         {loading && (
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                 <Avatar sx={{ width: 24, height: 24, bgcolor: 'primary.main' }}>
                                     <AiIcon sx={{ fontSize: 14 }} />
                                 </Avatar>
-                                <Box sx={{ display: 'flex', gap: '3px', alignItems: 'center', px: 1, py: 0.5, bgcolor: 'action.hover', borderRadius: '4px 10px 10px 10px' }}>
+                                <Box sx={{ display: 'flex', gap: '3px', alignItems: 'center', px: 1, py: 0.8, bgcolor: 'action.hover', borderRadius: '4px 10px 10px 10px' }}>
                                     {[0, 1, 2].map(i => (
                                         <Box key={i} sx={{
                                             width: 6, height: 6, borderRadius: '50%', bgcolor: 'primary.main',
@@ -168,8 +194,8 @@ function AiChatWidget() {
                         <div ref={vegRef} />
                     </Box>
 
-                    {/* Gyors kérdések — csak az elején */}
-                    {mutatGyorsKerdeseket && !loading && (
+                    {/* Gyors kérdések */}
+                    {mutatGyorsKerdeseket && (
                         <>
                             <Divider />
                             <Box sx={{ p: 1, display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>

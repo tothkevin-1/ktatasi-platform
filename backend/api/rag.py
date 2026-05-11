@@ -55,8 +55,19 @@ def _betolt_tananyag(collection):
         collection.add(documents=dokumentumok, ids=id_lista, metadatas=metaadatok)
 
 
-def kereses(kerdes: str, n_results: int = 3) -> str:
+TANTARGY_NEVEK = {
+    'Az internet története': 'internet_tortenete',
+    'Földrajz': 'foldrajz',
+    'Biológia': 'biologia',
+}
+
+def kereses(kerdes: str, n_results: int = 3, tantargy: str = None) -> str:
     collection = get_collection()
-    eredmenyek = collection.query(query_texts=[kerdes], n_results=n_results)
+    where = {'tantargy': TANTARGY_NEVEK[tantargy]} if tantargy and tantargy in TANTARGY_NEVEK else None
+    eredmenyek = collection.query(
+        query_texts=[kerdes],
+        n_results=n_results,
+        where=where if where else None
+    )
     dokumentumok = eredmenyek.get('documents', [[]])[0]
     return '\n\n'.join(dokumentumok)

@@ -220,32 +220,48 @@ class AIChatView(APIView):
 
     def post(self, request, *args, **kwargs):
         uzenet = request.data.get('uzenet', '').strip()
+        elozmeny = request.data.get('elozmeny', [])  # [{szerep, szoveg}, ...]
+        tantargy = request.data.get('tantargy', '').strip() or None
+
         if not uzenet:
             return Response({'error': 'Üres üzenet'}, status=status.HTTP_400_BAD_REQUEST)
 
-        # RAG: releváns tananyagrészek keresése
+        # RAG: releváns tananyagrészek keresése (tantárgy-szűréssel ha van)
         kontextus = ''
         try:
             from .rag import kereses
-            kontextus = kereses(uzenet)
+            kontextus = kereses(uzenet, tantargy=tantargy)
         except Exception:
             pass
 
+        # Előzmények formázása (max 6 üzenet = 3 csere)
+        elozmeny_szoveg = ''
+        if elozmeny:
+            sorok = []
+            for uzenet_elem in elozmeny[-6:]:
+                szerep = 'Diák' if uzenet_elem.get('szerep') == 'diak' else 'Asszisztens'
+                sorok.append(f"{szerep}: {uzenet_elem.get('szoveg', '')}")
+            elozmeny_szoveg = '\n'.join(sorok)
+
+        rendszer = (
+            "Te egy barátságos, türelmes iskolai tanulmányi asszisztens vagy. "
+            "Kizárólag magyarul válaszolj, érthetően. "
+            "Használj rövid bekezdéseket, és ha szükséges, felsorolásokat. "
+        )
+        if tantargy:
+            rendszer += f"A diák jelenleg a(z) '{tantargy}' tantárgyból kérdez. "
+
         if kontextus:
-            prompt = (
-                "Te egy barátságos, türelmes iskolai tanulmányi asszisztens vagy. "
-                "Kizárólag magyarul válaszolj, röviden és érthetően. "
-                "Az alábbi tananyagrészletek alapján válaszolj a diák kérdésére. "
+            rendszer += (
+                "Az alábbi tananyagrészletek alapján válaszolj. "
                 "Ha a választ nem találod a tananyagban, mondd meg őszintén.\n\n"
                 f"Tananyag:\n{kontextus}\n\n"
-                f"Diák kérdése: {uzenet}"
             )
-        else:
-            prompt = (
-                "Te egy barátságos, türelmes iskolai tanulmányi asszisztens vagy. "
-                "Kizárólag magyarul válaszolj, röviden és érthetően. "
-                f"A diák kérdése: {uzenet}"
-            )
+
+        prompt = rendszer
+        if elozmeny_szoveg:
+            prompt += f"Eddigi beszélgetés:\n{elozmeny_szoveg}\n\n"
+        prompt += f"Diák: {uzenet}\nAsszisztens:"
 
         try:
             ollama_response = http_requests.post(
